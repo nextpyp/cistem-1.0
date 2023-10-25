@@ -17,21 +17,6 @@ public:
 	float						logp;					// Log likelihood;
 	float						particle_occupancy;		// Particle occupancy within a class
 	float						particle_score;
-	float  						acceleration_voltage;
-
-	// XD: added
-	float  						pre_exposure_dose;
-	float  						dose_per_frame;
-	int  						film_number;
-	int  						ptl_number;
-	int  						frame_number;
-	int							number_of_pixels;
-	int							ptl_avg_score;
-	float						*data_weights;
-
-	bool						score_weighting;
-	bool						dose_weighting;
-
 	AnglesAndShifts				alignment_parameters;
 	RotationMatrix				*euler_matrix;
 /*	float						phi_average;			// In deg
@@ -90,16 +75,10 @@ public:
 	bool						no_ctf_weighting;
 
 	Particle();
-	// Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension);
-	// could use something like... 	FrealignParameterFile(wxString wanted_filename, int wanted_access_type, int wanted_records_per_line = 17);
-
-	Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension, int wanted_number_of_parameters = 17);
+	Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension);
 	~Particle();
 
-// updated init
-	// void Init();
-
-	void Init(int wanted_number_of_parameters = 17);
+	void Init();
 	void AllocateImage(int wanted_logical_x_dimension, int wanted_logical_y_dimension);
 	void AllocateCTFImage(int wanted_logical_x_dimension, int wanted_logical_y_dimension);
 	void Allocate(int wanted_logical_x_dimension, int wanted_logical_y_dimension);

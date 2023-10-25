@@ -71,8 +71,8 @@ float FrealignObjectiveFunction(void *scoring_parameters, float *array_of_values
 //	wxPrintf("sigma_noise, mask_volume, penalty = %g %g %g\n", comparison_object->particle->sigma_noise, comparison_object->particle->mask_volume,
 //			comparison_object->particle->ReturnParameterPenalty(comparison_object->particle->temp_float));
 	return 	- comparison_object->particle->particle_image->GetWeightedCorrelationWithImage(*comparison_object->projection_image, comparison_object->particle->bin_index,
-			  comparison_object->particle->pixel_size / comparison_object->particle->signed_CC_limit)
-			- comparison_object->particle->ReturnParameterPenalty(comparison_object->particle->temp_float);
+			  comparison_object->particle->pixel_size / comparison_object->particle->signed_CC_limit);
+		// - comparison_object->particle->ReturnParameterPenalty(comparison_object->particle->temp_float);
 		// This penalty term assumes a Gaussian x,y distribution that is probably not correct in most cases. It might be better to leave it out.
 
 }

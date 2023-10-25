@@ -92,8 +92,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = cisTEM$(EXEEXT) unblur$(EXEEXT) \
 	cisTEM_job_control$(EXEEXT) console_test$(EXEEXT) \
-	applyctf$(EXEEXT) reconstruct3d$(EXEEXT) \
-	reconstruct3d_stats_DW$(EXEEXT) merge3d$(EXEEXT) \
+	applyctf$(EXEEXT) reconstruct3d$(EXEEXT) merge3d$(EXEEXT) \
 	project3d$(EXEEXT) refine3d$(EXEEXT) calc_occ$(EXEEXT) \
 	ctffind$(EXEEXT) remove_outlier_pixels$(EXEEXT) \
 	resize$(EXEEXT) resample$(EXEEXT) reset_mrc_header$(EXEEXT) \
@@ -169,7 +168,6 @@ am_libcore_a_OBJECTS = core/libcore_a-functions.$(OBJEXT) \
 	core/libcore_a-conjugate_gradient.$(OBJEXT) \
 	core/libcore_a-euler_search.$(OBJEXT) \
 	core/libcore_a-frealign_parameter_file.$(OBJEXT) \
-	core/libcore_a-frealign_parameter_file_stats.$(OBJEXT) \
 	core/libcore_a-basic_star_file_reader.$(OBJEXT) \
 	core/libcore_a-refinement_package.$(OBJEXT) \
 	core/libcore_a-refinement.$(OBJEXT) \
@@ -422,13 +420,6 @@ reconstruct3d_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(reconstruct3d_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am_reconstruct3d_stats_DW_OBJECTS = programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.$(OBJEXT)
-reconstruct3d_stats_DW_OBJECTS = $(am_reconstruct3d_stats_DW_OBJECTS)
-reconstruct3d_stats_DW_DEPENDENCIES = libcore.a $(am__DEPENDENCIES_1)
-reconstruct3d_stats_DW_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(reconstruct3d_stats_DW_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_refine2d_OBJECTS = programs/refine2d/refine2d-refine2d.$(OBJEXT)
 refine2d_OBJECTS = $(am_refine2d_OBJECTS)
 refine2d_DEPENDENCIES = libcore.a $(am__DEPENDENCIES_1)
@@ -573,13 +564,12 @@ SOURCES = $(libcore_a_SOURCES) $(libguicore_a_SOURCES) \
 	$(merge2d_SOURCES) $(merge3d_SOURCES) $(montage_SOURCES) \
 	$(niko_test_SOURCES) $(prepare_stack_SOURCES) \
 	$(project3d_SOURCES) $(reconstruct3d_SOURCES) \
-	$(reconstruct3d_stats_DW_SOURCES) $(refine2d_SOURCES) \
-	$(refine3d_SOURCES) $(remove_inf_and_nan_SOURCES) \
-	$(remove_outlier_pixels_SOURCES) $(resample_SOURCES) \
-	$(reset_mrc_header_SOURCES) $(resize_SOURCES) \
-	$(scale_with_mask_SOURCES) $(sharpen_map_SOURCES) \
-	$(sum_all_mrc_files_SOURCES) $(sum_all_tif_files_SOURCES) \
-	$(unblur_SOURCES)
+	$(refine2d_SOURCES) $(refine3d_SOURCES) \
+	$(remove_inf_and_nan_SOURCES) $(remove_outlier_pixels_SOURCES) \
+	$(resample_SOURCES) $(reset_mrc_header_SOURCES) \
+	$(resize_SOURCES) $(scale_with_mask_SOURCES) \
+	$(sharpen_map_SOURCES) $(sum_all_mrc_files_SOURCES) \
+	$(sum_all_tif_files_SOURCES) $(unblur_SOURCES)
 DIST_SOURCES = $(libcore_a_SOURCES) $(libguicore_a_SOURCES) \
 	$(align_symmetry_SOURCES) $(apply_gain_ref_SOURCES) \
 	$(apply_mask_SOURCES) $(applyctf_SOURCES) $(calc_occ_SOURCES) \
@@ -592,13 +582,12 @@ DIST_SOURCES = $(libcore_a_SOURCES) $(libguicore_a_SOURCES) \
 	$(merge2d_SOURCES) $(merge3d_SOURCES) $(montage_SOURCES) \
 	$(niko_test_SOURCES) $(prepare_stack_SOURCES) \
 	$(project3d_SOURCES) $(reconstruct3d_SOURCES) \
-	$(reconstruct3d_stats_DW_SOURCES) $(refine2d_SOURCES) \
-	$(refine3d_SOURCES) $(remove_inf_and_nan_SOURCES) \
-	$(remove_outlier_pixels_SOURCES) $(resample_SOURCES) \
-	$(reset_mrc_header_SOURCES) $(resize_SOURCES) \
-	$(scale_with_mask_SOURCES) $(sharpen_map_SOURCES) \
-	$(sum_all_mrc_files_SOURCES) $(sum_all_tif_files_SOURCES) \
-	$(unblur_SOURCES)
+	$(refine2d_SOURCES) $(refine3d_SOURCES) \
+	$(remove_inf_and_nan_SOURCES) $(remove_outlier_pixels_SOURCES) \
+	$(resample_SOURCES) $(reset_mrc_header_SOURCES) \
+	$(resize_SOURCES) $(scale_with_mask_SOURCES) \
+	$(sharpen_map_SOURCES) $(sum_all_mrc_files_SOURCES) \
+	$(sum_all_tif_files_SOURCES) $(unblur_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -790,7 +779,6 @@ noinst_HEADERS = core/asset_group.h \
                  core/conjugate_gradient.h \
                  core/euler_search.h \
                  core/frealign_parameter_file.h \
-		 core/frealign_parameter_file_stats.h \
                  core/particle_finder.h \
                  core/myapp.h \
                  core/abstract_image_file.h \
@@ -980,7 +968,6 @@ libcore_a_SOURCES = core/functions.cpp \
                        core/conjugate_gradient.cpp \
                        core/euler_search.cpp \
                        core/frealign_parameter_file.cpp \
-		       core/frealign_parameter_file_stats.cpp \
                        core/basic_star_file_reader.cpp \
                        core/refinement_package.cpp \
                        core/refinement.cpp \
@@ -1059,10 +1046,6 @@ reconstruct3d_SOURCES = programs/reconstruct3d/reconstruct3d.cpp
 reconstruct3d_CXXFLAGS = $(WX_CPPFLAGS_BASE)
 reconstruct3d_CPPFLAGS = $(WX_CPPFLAGS_BASE)
 reconstruct3d_LDADD = libcore.a $(WX_LIBS_BASE)
-reconstruct3d_stats_DW_SOURCES = programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-reconstruct3d_stats_DW_CXXFLAGS = $(WX_CPPFLAGS_BASE)
-reconstruct3d_stats_DW_CPPFLAGS = $(WX_CPPFLAGS_BASE)
-reconstruct3d_stats_DW_LDADD = libcore.a $(WX_LIBS_BASE)
 merge3d_SOURCES = programs/merge3d/merge3d.cpp
 merge3d_CXXFLAGS = $(WX_CPPFLAGS_BASE)
 merge3d_CPPFLAGS = $(WX_CPPFLAGS_BASE)
@@ -1306,8 +1289,6 @@ core/libcore_a-conjugate_gradient.$(OBJEXT): core/$(am__dirstamp) \
 core/libcore_a-euler_search.$(OBJEXT): core/$(am__dirstamp) \
 	core/$(DEPDIR)/$(am__dirstamp)
 core/libcore_a-frealign_parameter_file.$(OBJEXT):  \
-	core/$(am__dirstamp) core/$(DEPDIR)/$(am__dirstamp)
-core/libcore_a-frealign_parameter_file_stats.$(OBJEXT):  \
 	core/$(am__dirstamp) core/$(DEPDIR)/$(am__dirstamp)
 core/libcore_a-basic_star_file_reader.$(OBJEXT): core/$(am__dirstamp) \
 	core/$(DEPDIR)/$(am__dirstamp)
@@ -1836,19 +1817,6 @@ programs/reconstruct3d/reconstruct3d-reconstruct3d.$(OBJEXT):  \
 reconstruct3d$(EXEEXT): $(reconstruct3d_OBJECTS) $(reconstruct3d_DEPENDENCIES) $(EXTRA_reconstruct3d_DEPENDENCIES) 
 	@rm -f reconstruct3d$(EXEEXT)
 	$(AM_V_CXXLD)$(reconstruct3d_LINK) $(reconstruct3d_OBJECTS) $(reconstruct3d_LDADD) $(LIBS)
-programs/reconstruct3d_stats_DW/$(am__dirstamp):
-	@$(MKDIR_P) programs/reconstruct3d_stats_DW
-	@: > programs/reconstruct3d_stats_DW/$(am__dirstamp)
-programs/reconstruct3d_stats_DW/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) programs/reconstruct3d_stats_DW/$(DEPDIR)
-	@: > programs/reconstruct3d_stats_DW/$(DEPDIR)/$(am__dirstamp)
-programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.$(OBJEXT):  \
-	programs/reconstruct3d_stats_DW/$(am__dirstamp) \
-	programs/reconstruct3d_stats_DW/$(DEPDIR)/$(am__dirstamp)
-
-reconstruct3d_stats_DW$(EXEEXT): $(reconstruct3d_stats_DW_OBJECTS) $(reconstruct3d_stats_DW_DEPENDENCIES) $(EXTRA_reconstruct3d_stats_DW_DEPENDENCIES) 
-	@rm -f reconstruct3d_stats_DW$(EXEEXT)
-	$(AM_V_CXXLD)$(reconstruct3d_stats_DW_LINK) $(reconstruct3d_stats_DW_OBJECTS) $(reconstruct3d_stats_DW_LDADD) $(LIBS)
 programs/refine2d/$(am__dirstamp):
 	@$(MKDIR_P) programs/refine2d
 	@: > programs/refine2d/$(am__dirstamp)
@@ -2035,7 +2003,6 @@ mostlyclean-compile:
 	-rm -f programs/project3d/*.$(OBJEXT)
 	-rm -f programs/projectx/*.$(OBJEXT)
 	-rm -f programs/reconstruct3d/*.$(OBJEXT)
-	-rm -f programs/reconstruct3d_stats_DW/*.$(OBJEXT)
 	-rm -f programs/refine2d/*.$(OBJEXT)
 	-rm -f programs/refine3d/*.$(OBJEXT)
 	-rm -f programs/remove_inf_and_nan/*.$(OBJEXT)
@@ -2072,7 +2039,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-empirical_distribution.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-euler_search.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-frealign_parameter_file.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-functions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@core/$(DEPDIR)/libcore_a-image.Po@am__quote@
@@ -2192,7 +2158,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@programs/project3d/$(DEPDIR)/project3d-project3d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@programs/projectx/$(DEPDIR)/cisTEM-projectx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@programs/reconstruct3d/$(DEPDIR)/reconstruct3d-reconstruct3d.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@programs/refine2d/$(DEPDIR)/refine2d-refine2d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@programs/refine3d/$(DEPDIR)/refine3d-refine3d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@programs/remove_inf_and_nan/$(DEPDIR)/remove_inf_and_nan-remove_inf_and_nan.Po@am__quote@
@@ -2813,20 +2778,6 @@ core/libcore_a-frealign_parameter_file.obj: core/frealign_parameter_file.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='core/frealign_parameter_file.cpp' object='core/libcore_a-frealign_parameter_file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -c -o core/libcore_a-frealign_parameter_file.obj `if test -f 'core/frealign_parameter_file.cpp'; then $(CYGPATH_W) 'core/frealign_parameter_file.cpp'; else $(CYGPATH_W) '$(srcdir)/core/frealign_parameter_file.cpp'; fi`
-
-core/libcore_a-frealign_parameter_file_stats.o: core/frealign_parameter_file_stats.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -MT core/libcore_a-frealign_parameter_file_stats.o -MD -MP -MF core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Tpo -c -o core/libcore_a-frealign_parameter_file_stats.o `test -f 'core/frealign_parameter_file_stats.cpp' || echo '$(srcdir)/'`core/frealign_parameter_file_stats.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Tpo core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='core/frealign_parameter_file_stats.cpp' object='core/libcore_a-frealign_parameter_file_stats.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -c -o core/libcore_a-frealign_parameter_file_stats.o `test -f 'core/frealign_parameter_file_stats.cpp' || echo '$(srcdir)/'`core/frealign_parameter_file_stats.cpp
-
-core/libcore_a-frealign_parameter_file_stats.obj: core/frealign_parameter_file_stats.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -MT core/libcore_a-frealign_parameter_file_stats.obj -MD -MP -MF core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Tpo -c -o core/libcore_a-frealign_parameter_file_stats.obj `if test -f 'core/frealign_parameter_file_stats.cpp'; then $(CYGPATH_W) 'core/frealign_parameter_file_stats.cpp'; else $(CYGPATH_W) '$(srcdir)/core/frealign_parameter_file_stats.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Tpo core/$(DEPDIR)/libcore_a-frealign_parameter_file_stats.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='core/frealign_parameter_file_stats.cpp' object='core/libcore_a-frealign_parameter_file_stats.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -c -o core/libcore_a-frealign_parameter_file_stats.obj `if test -f 'core/frealign_parameter_file_stats.cpp'; then $(CYGPATH_W) 'core/frealign_parameter_file_stats.cpp'; else $(CYGPATH_W) '$(srcdir)/core/frealign_parameter_file_stats.cpp'; fi`
 
 core/libcore_a-basic_star_file_reader.o: core/basic_star_file_reader.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcore_a_CPPFLAGS) $(CPPFLAGS) $(libcore_a_CXXFLAGS) $(CXXFLAGS) -MT core/libcore_a-basic_star_file_reader.o -MD -MP -MF core/$(DEPDIR)/libcore_a-basic_star_file_reader.Tpo -c -o core/libcore_a-basic_star_file_reader.o `test -f 'core/basic_star_file_reader.cpp' || echo '$(srcdir)/'`core/basic_star_file_reader.cpp
@@ -4214,20 +4165,6 @@ programs/reconstruct3d/reconstruct3d-reconstruct3d.obj: programs/reconstruct3d/r
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(reconstruct3d_CPPFLAGS) $(CPPFLAGS) $(reconstruct3d_CXXFLAGS) $(CXXFLAGS) -c -o programs/reconstruct3d/reconstruct3d-reconstruct3d.obj `if test -f 'programs/reconstruct3d/reconstruct3d.cpp'; then $(CYGPATH_W) 'programs/reconstruct3d/reconstruct3d.cpp'; else $(CYGPATH_W) '$(srcdir)/programs/reconstruct3d/reconstruct3d.cpp'; fi`
 
-programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.o: programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(reconstruct3d_stats_DW_CPPFLAGS) $(CPPFLAGS) $(reconstruct3d_stats_DW_CXXFLAGS) $(CXXFLAGS) -MT programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.o -MD -MP -MF programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Tpo -c -o programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.o `test -f 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp' || echo '$(srcdir)/'`programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Tpo programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp' object='programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(reconstruct3d_stats_DW_CPPFLAGS) $(CPPFLAGS) $(reconstruct3d_stats_DW_CXXFLAGS) $(CXXFLAGS) -c -o programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.o `test -f 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp' || echo '$(srcdir)/'`programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-
-programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.obj: programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(reconstruct3d_stats_DW_CPPFLAGS) $(CPPFLAGS) $(reconstruct3d_stats_DW_CXXFLAGS) $(CXXFLAGS) -MT programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.obj -MD -MP -MF programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Tpo -c -o programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.obj `if test -f 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; then $(CYGPATH_W) 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; else $(CYGPATH_W) '$(srcdir)/programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Tpo programs/reconstruct3d_stats_DW/$(DEPDIR)/reconstruct3d_stats_DW-reconstruct3d_stats_DW.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp' object='programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(reconstruct3d_stats_DW_CPPFLAGS) $(CPPFLAGS) $(reconstruct3d_stats_DW_CXXFLAGS) $(CXXFLAGS) -c -o programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW-reconstruct3d_stats_DW.obj `if test -f 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; then $(CYGPATH_W) 'programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; else $(CYGPATH_W) '$(srcdir)/programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp'; fi`
-
 programs/refine2d/refine2d-refine2d.o: programs/refine2d/refine2d.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(refine2d_CPPFLAGS) $(CPPFLAGS) $(refine2d_CXXFLAGS) $(CXXFLAGS) -MT programs/refine2d/refine2d-refine2d.o -MD -MP -MF programs/refine2d/$(DEPDIR)/refine2d-refine2d.Tpo -c -o programs/refine2d/refine2d-refine2d.o `test -f 'programs/refine2d/refine2d.cpp' || echo '$(srcdir)/'`programs/refine2d/refine2d.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) programs/refine2d/$(DEPDIR)/refine2d-refine2d.Tpo programs/refine2d/$(DEPDIR)/refine2d-refine2d.Po
@@ -4571,8 +4508,6 @@ distclean-generic:
 	-rm -f programs/projectx/$(am__dirstamp)
 	-rm -f programs/reconstruct3d/$(DEPDIR)/$(am__dirstamp)
 	-rm -f programs/reconstruct3d/$(am__dirstamp)
-	-rm -f programs/reconstruct3d_stats_DW/$(DEPDIR)/$(am__dirstamp)
-	-rm -f programs/reconstruct3d_stats_DW/$(am__dirstamp)
 	-rm -f programs/refine2d/$(DEPDIR)/$(am__dirstamp)
 	-rm -f programs/refine2d/$(am__dirstamp)
 	-rm -f programs/refine3d/$(DEPDIR)/$(am__dirstamp)
@@ -4607,7 +4542,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool \
 	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf core/$(DEPDIR) core/sqlite/$(DEPDIR) gui/$(DEPDIR) programs/align_symmetry/$(DEPDIR) programs/apply_gain_ref/$(DEPDIR) programs/apply_mask/$(DEPDIR) programs/applyctf/$(DEPDIR) programs/calc_occ/$(DEPDIR) programs/calculate_fsc/$(DEPDIR) programs/console_test/$(DEPDIR) programs/convert_tif_to_mrc/$(DEPDIR) programs/ctffind/$(DEPDIR) programs/estimate_dataset_ssnr/$(DEPDIR) programs/extract_particles/$(DEPDIR) programs/find_particles/$(DEPDIR) programs/guix_job_control/$(DEPDIR) programs/mag_distortion_correct/$(DEPDIR) programs/make_orth_views/$(DEPDIR) programs/make_size_map/$(DEPDIR) programs/merge2d/$(DEPDIR) programs/merge3d/$(DEPDIR) programs/montage/$(DEPDIR) programs/niko_test/$(DEPDIR) programs/prepare_stack/$(DEPDIR) programs/project3d/$(DEPDIR) programs/projectx/$(DEPDIR) programs/reconstruct3d/$(DEPDIR) programs/reconstruct3d_stats_DW/$(DEPDIR) programs/refine2d/$(DEPDIR) programs/refine3d/$(DEPDIR) programs/remove_inf_and_nan/$(DEPDIR) programs/remove_outlier_pixels/$(DEPDIR) programs/resample/$(DEPDIR) programs/reset_mrc_header/$(DEPDIR) programs/resize/$(DEPDIR) programs/scale_with_mask/$(DEPDIR) programs/sharpen_map/$(DEPDIR) programs/sum_all_mrc_files/$(DEPDIR) programs/sum_all_tif_files/$(DEPDIR) programs/unblur/$(DEPDIR)
+	-rm -rf core/$(DEPDIR) core/sqlite/$(DEPDIR) gui/$(DEPDIR) programs/align_symmetry/$(DEPDIR) programs/apply_gain_ref/$(DEPDIR) programs/apply_mask/$(DEPDIR) programs/applyctf/$(DEPDIR) programs/calc_occ/$(DEPDIR) programs/calculate_fsc/$(DEPDIR) programs/console_test/$(DEPDIR) programs/convert_tif_to_mrc/$(DEPDIR) programs/ctffind/$(DEPDIR) programs/estimate_dataset_ssnr/$(DEPDIR) programs/extract_particles/$(DEPDIR) programs/find_particles/$(DEPDIR) programs/guix_job_control/$(DEPDIR) programs/mag_distortion_correct/$(DEPDIR) programs/make_orth_views/$(DEPDIR) programs/make_size_map/$(DEPDIR) programs/merge2d/$(DEPDIR) programs/merge3d/$(DEPDIR) programs/montage/$(DEPDIR) programs/niko_test/$(DEPDIR) programs/prepare_stack/$(DEPDIR) programs/project3d/$(DEPDIR) programs/projectx/$(DEPDIR) programs/reconstruct3d/$(DEPDIR) programs/refine2d/$(DEPDIR) programs/refine3d/$(DEPDIR) programs/remove_inf_and_nan/$(DEPDIR) programs/remove_outlier_pixels/$(DEPDIR) programs/resample/$(DEPDIR) programs/reset_mrc_header/$(DEPDIR) programs/resize/$(DEPDIR) programs/scale_with_mask/$(DEPDIR) programs/sharpen_map/$(DEPDIR) programs/sum_all_mrc_files/$(DEPDIR) programs/sum_all_tif_files/$(DEPDIR) programs/unblur/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -4653,7 +4588,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf core/$(DEPDIR) core/sqlite/$(DEPDIR) gui/$(DEPDIR) programs/align_symmetry/$(DEPDIR) programs/apply_gain_ref/$(DEPDIR) programs/apply_mask/$(DEPDIR) programs/applyctf/$(DEPDIR) programs/calc_occ/$(DEPDIR) programs/calculate_fsc/$(DEPDIR) programs/console_test/$(DEPDIR) programs/convert_tif_to_mrc/$(DEPDIR) programs/ctffind/$(DEPDIR) programs/estimate_dataset_ssnr/$(DEPDIR) programs/extract_particles/$(DEPDIR) programs/find_particles/$(DEPDIR) programs/guix_job_control/$(DEPDIR) programs/mag_distortion_correct/$(DEPDIR) programs/make_orth_views/$(DEPDIR) programs/make_size_map/$(DEPDIR) programs/merge2d/$(DEPDIR) programs/merge3d/$(DEPDIR) programs/montage/$(DEPDIR) programs/niko_test/$(DEPDIR) programs/prepare_stack/$(DEPDIR) programs/project3d/$(DEPDIR) programs/projectx/$(DEPDIR) programs/reconstruct3d/$(DEPDIR) programs/reconstruct3d_stats_DW/$(DEPDIR) programs/refine2d/$(DEPDIR) programs/refine3d/$(DEPDIR) programs/remove_inf_and_nan/$(DEPDIR) programs/remove_outlier_pixels/$(DEPDIR) programs/resample/$(DEPDIR) programs/reset_mrc_header/$(DEPDIR) programs/resize/$(DEPDIR) programs/scale_with_mask/$(DEPDIR) programs/sharpen_map/$(DEPDIR) programs/sum_all_mrc_files/$(DEPDIR) programs/sum_all_tif_files/$(DEPDIR) programs/unblur/$(DEPDIR)
+	-rm -rf core/$(DEPDIR) core/sqlite/$(DEPDIR) gui/$(DEPDIR) programs/align_symmetry/$(DEPDIR) programs/apply_gain_ref/$(DEPDIR) programs/apply_mask/$(DEPDIR) programs/applyctf/$(DEPDIR) programs/calc_occ/$(DEPDIR) programs/calculate_fsc/$(DEPDIR) programs/console_test/$(DEPDIR) programs/convert_tif_to_mrc/$(DEPDIR) programs/ctffind/$(DEPDIR) programs/estimate_dataset_ssnr/$(DEPDIR) programs/extract_particles/$(DEPDIR) programs/find_particles/$(DEPDIR) programs/guix_job_control/$(DEPDIR) programs/mag_distortion_correct/$(DEPDIR) programs/make_orth_views/$(DEPDIR) programs/make_size_map/$(DEPDIR) programs/merge2d/$(DEPDIR) programs/merge3d/$(DEPDIR) programs/montage/$(DEPDIR) programs/niko_test/$(DEPDIR) programs/prepare_stack/$(DEPDIR) programs/project3d/$(DEPDIR) programs/projectx/$(DEPDIR) programs/reconstruct3d/$(DEPDIR) programs/refine2d/$(DEPDIR) programs/refine3d/$(DEPDIR) programs/remove_inf_and_nan/$(DEPDIR) programs/remove_outlier_pixels/$(DEPDIR) programs/resample/$(DEPDIR) programs/reset_mrc_header/$(DEPDIR) programs/resize/$(DEPDIR) programs/scale_with_mask/$(DEPDIR) programs/sharpen_map/$(DEPDIR) programs/sum_all_mrc_files/$(DEPDIR) programs/sum_all_tif_files/$(DEPDIR) programs/unblur/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

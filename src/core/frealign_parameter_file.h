@@ -9,7 +9,6 @@ public:
 	int			access_type;
 	int			records_per_line;
 	int			number_of_lines;
-	int			all_lines;
 	int			current_line;
 	float		*parameter_cache;
 	float		average_defocus;

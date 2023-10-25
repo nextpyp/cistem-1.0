@@ -516,9 +516,6 @@ bool UnBlurApp::DoCalculation()
 
 		for (image_counter = first_frame - 1; image_counter < last_frame; image_counter++)
 		{
-			wxPrintf("===\n");
-			wxPrintf("%i \n", image_counter);
-
 			my_electron_dose->CalculateDoseFilterAs1DArray(&image_stack[image_counter], dose_filter, (image_counter * exposure_per_frame) + pre_exposure_amount, ((image_counter + 1) * exposure_per_frame) + pre_exposure_amount);
 
 			// filter the image, and also calculate the sum of squares..
@@ -536,7 +533,6 @@ bool UnBlurApp::DoCalculation()
 			}
 
 			sum_image.AddImage(&image_stack[image_counter]);
-			wxPrintf("===\n");
 		}
 	}
 	else // just add them

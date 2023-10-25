@@ -37,7 +37,7 @@ noinst_HEADERS = core/asset_group.h \
                  core/conjugate_gradient.h \
                  core/euler_search.h \
                  core/frealign_parameter_file.h \
-		 core/frealign_parameter_file_stats.h \
+                 core/frealign_parameter_file_stats.h \
                  core/particle_finder.h \
                  core/myapp.h \
                  core/abstract_image_file.h \
@@ -193,7 +193,7 @@ noinst_HEADERS = core/asset_group.h \
 noinst_LIBRARIES = libcore.a libguicore.a
 
 
-bin_PROGRAMS = cisTEM unblur cisTEM_job_control console_test applyctf reconstruct3d reconstruct3d_stats_DW merge3d project3d refine3d calc_occ ctffind remove_outlier_pixels resize resample reset_mrc_header estimate_dataset_ssnr find_particles montage extract_particles sum_all_mrc_files sum_all_tif_files apply_gain_ref scale_with_mask refine2d merge2d mag_distortion_correct apply_mask convert_tif_to_mrc remove_inf_and_nan make_orth_views sharpen_map calculate_fsc make_size_map prepare_stack align_symmetry niko_test 
+bin_PROGRAMS = cisTEM unblur cisTEM_job_control console_test applyctf reconstruct3d reconstruct3d_stats merge3d project3d refine3d refine3d_no_prior calc_occ ctffind remove_outlier_pixels resize resample reset_mrc_header estimate_dataset_ssnr find_particles montage extract_particles sum_all_mrc_files sum_all_tif_files apply_gain_ref scale_with_mask refine2d merge2d mag_distortion_correct apply_mask convert_tif_to_mrc remove_inf_and_nan make_orth_views sharpen_map calculate_fsc make_size_map prepare_stack align_symmetry niko_test 
 
 libcore_a_SOURCES =    core/functions.cpp \
 					   core/globals.cpp \
@@ -235,7 +235,7 @@ libcore_a_SOURCES =    core/functions.cpp \
                        core/conjugate_gradient.cpp \
                        core/euler_search.cpp \
                        core/frealign_parameter_file.cpp \
-		       core/frealign_parameter_file_stats.cpp \
+                       core/frealign_parameter_file_stats.cpp \
                        core/basic_star_file_reader.cpp \
                        core/refinement_package.cpp \
                        core/refinement.cpp \
@@ -286,15 +286,15 @@ ctffind_CXXFLAGS = $(WX_CPPFLAGS_BASE)
 ctffind_CPPFLAGS = $(WX_CPPFLAGS_BASE)
 ctffind_LDADD = libcore.a $(WX_LIBS_BASE)
 
+reconstruct3d_stats_SOURCES = programs/reconstruct3d_stats/reconstruct3d_stats.cpp
+reconstruct3d_stats_CXXFLAGS = $(WX_CPPFLAGS_BASE)
+reconstruct3d_stats_CPPFLAGS = $(WX_CPPFLAGS_BASE)
+reconstruct3d_stats_LDADD = libcore.a $(WX_LIBS_BASE)
+
 reconstruct3d_SOURCES = programs/reconstruct3d/reconstruct3d.cpp
 reconstruct3d_CXXFLAGS = $(WX_CPPFLAGS_BASE)
 reconstruct3d_CPPFLAGS = $(WX_CPPFLAGS_BASE)
 reconstruct3d_LDADD = libcore.a $(WX_LIBS_BASE)
-
-reconstruct3d_stats_DW_SOURCES = programs/reconstruct3d_stats_DW/reconstruct3d_stats_DW.cpp
-reconstruct3d_stats_DW_CXXFLAGS = $(WX_CPPFLAGS_BASE)
-reconstruct3d_stats_DW_CPPFLAGS = $(WX_CPPFLAGS_BASE)
-reconstruct3d_stats_DW_LDADD = libcore.a $(WX_LIBS_BASE)
 
 merge3d_SOURCES = programs/merge3d/merge3d.cpp
 merge3d_CXXFLAGS = $(WX_CPPFLAGS_BASE)
@@ -315,6 +315,11 @@ refine3d_SOURCES = programs/refine3d/refine3d.cpp
 refine3d_CXXFLAGS = $(WX_CPPFLAGS_BASE)
 refine3d_CPPFLAGS = $(WX_CPPFLAGS_BASE)
 refine3d_LDADD = libcore.a $(WX_LIBS_BASE)
+
+refine3d_no_prior_SOURCES = programs/refine3d_no_prior/refine3d_no_prior.cpp
+refine3d_no_prior_CXXFLAGS = $(WX_CPPFLAGS_BASE)
+refine3d_no_prior_CPPFLAGS = $(WX_CPPFLAGS_BASE)
+refine3d_no_prior_LDADD = libcore.a $(WX_LIBS_BASE)
 
 remove_outlier_pixels_SOURCES = programs/remove_outlier_pixels/remove_outlier_pixels.cpp
 remove_outlier_pixels_CXXFLAGS = $(WX_CPPFLAGS_BASE)

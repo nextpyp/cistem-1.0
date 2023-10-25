@@ -21,7 +21,6 @@ public:
 	float ReturnCriticalDose(float spatial_frequency);
 	float ReturnDoseFilter(float dose_at_end_of_frame, float critical_dose);
 	void CalculateDoseFilterAs1DArray(Image *ref_image, float *filter_array, float dose_start, float dose_finish);
-	void CalculateDoseFilterAs1DComplexArray(Image *ref_image, float *filter_array, float dose_start, float dose_finish);
 };
 
 inline float ElectronDose::ReturnCriticalDose(float spatial_frequency)

@@ -112,7 +112,6 @@ void Reconstruct3D::Init(int wanted_logical_x_dimension, int wanted_logical_y_di
 	center_mass = false;
 }
 
-// XD: updated to take in dose weighting and modified score weighting
 void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symmetry_weight)
 {
 	MyDebugAssertTrue(particle_to_insert.particle_image->logical_x_dimension == logical_x_dimension && particle_to_insert.particle_image->logical_y_dimension == logical_y_dimension, "Error: Images different sizes");
@@ -130,13 +129,9 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 //	}
 
 	particle_to_insert.particle_image->PhaseShift(-particle_to_insert.alignment_parameters.ReturnShiftX() / particle_to_insert.pixel_size, -particle_to_insert.alignment_parameters.ReturnShiftY() / particle_to_insert.pixel_size);
-//	XD: particle occupancy / avg particle occupancy / noise squared
 	particle_weight = particle_to_insert.particle_occupancy / particle_to_insert.parameter_average[12] / powf(particle_to_insert.sigma_noise / particle_to_insert.parameter_average[14],2);
 //	particle_weight = particle_to_insert.particle_occupancy / 100.0 / powf(particle_to_insert.sigma_noise,2);
 
-// 	XD: frame, particle, film, particle occupancy, particle occupancy avg, sigma noise, sigma noise avg
-	// wxPrintf("%i %i %i %.2f %.2f %.2f %.2f \n", particle_to_insert.frame_number, particle_to_insert.ptl_number, particle_to_insert.film_number, particle_to_insert.particle_occupancy, particle_to_insert.parameter_average[12], particle_to_insert.sigma_noise, particle_to_insert.parameter_average[14]);
-	
 	images_processed++;
 
 	if (particle_weight > 0.0)
@@ -162,29 +157,9 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 		float frequency_squared;
 		float azimuth;
 		float weight;
-
-		// XD: data-driven exposure weighting
-		float frequency;
-		float frequency_modulation;
-		float score_dependency;
-		float score_modulation;
-		float data_driven_score;
-
-		// float *dose_filter;
-
-		// float average_score_1 = std::max(1.0f, average_score);
-
-		/*
-			The following block is for score-based weighting
-		*/
-		// w(scores, g) = Exp[-BSC/4 (score-avg_score)*g^2] where BSC is the score_weights_conversion and g is frequency
-		// XD: BSC/4 or -BSC/4 
+//		float average_score_1 = std::max(1.0f, average_score);
 		float score_weights_conversion4 = score_weights_conversion / powf(pixel_size,2) * 0.25;
-		// XD: (BSC/4)*(score-avg_score) 
-		float avg_weight_conversion = (particle_to_insert.ptl_avg_score - average_score) * score_weights_conversion4;
 		float weight_conversion = (particle_to_insert.particle_score - average_score) * score_weights_conversion4;
-
-		// wxPrintf("Particle average score %i\n", particle_to_insert.ptl_avg_score);
 //		float weight_conversion = (particle_to_insert.particle_score - average_score) * score_weights_conversion4 / average_score_1;
 
 		// Make sure that the exponentiated conversion factor will not lead to an overflow
@@ -197,147 +172,47 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 //			current_ctf = particle_to_insert.ctf_parameters;
 //			current_ctf_image->CalculateCTFImage(current_ctf);
 //		}
-		
-		// Now insert into 3D arrays
-		int array_counter = 0;
 
-		// print lines
-		// wxPrintf("Pixel size: %.2f \n", pixel_size);
-		// wxPrintf("Fourier voxel size: %f \n", particle_to_insert.particle_image->fourier_voxel_size_x);
-		// wxPrintf("===\n");
-		// wxPrintf("%i \n", particle_to_insert.frame_number);
-		// for (j = particle_to_insert.particle_image->logical_lower_bound_complex_y; j <= particle_to_insert.particle_image->logical_upper_bound_complex_y; j++)
-		// {
-		// 	y_coordinate_2d = j;
-		// 	y_coord_sq = powf(y_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_y, 2);
-		// 	// XD: should be similar to (just add the 0 coordinate), for (i = 0; i <= ref_image->physical_upper_bound_complex_x; i++) refer Image::UpdateLoopingAndAddressing()
-		// 	for (i = 0; i <= particle_to_insert.particle_image->logical_upper_bound_complex_x; i++)
-		// 	{
-		// 		wxPrintf("%.2f ", dose_filter[array_counter]);
-		// 		array_counter++;
-		// 	}
-		// 	wxPrintf("\n");
-		// }
-
-		// wxPrintf("%.5f ", particle_to_insert.particle_score);
-		// wxPrintf("%.5f ", average_score);
-		// wxPrintf("%.5f ", particle_weight);
-		// wxPrintf("%.5f ", weight_conversion);
-		// wxPrintf("\n");
-
-		// wxPrintf("Frame %i\n", particle_to_insert.frame_number);
-		// wxPrintf("Particle weight %.5f\n", particle_weight);
-
-		/*
-		XD: New weighting options:
-		score_weighting: standard cisTEM implementation; weights each frame based on individual frame and frequency = Exp[(-BSC/4)*(score-avg_score_across_all_frames)*g^2]
-		dose_weighting: data driven score based on average score across the same frame number and frequency = w(f,s) = Exp(-1/2 * r(f)**4 * y(s))/Sum_{all f}(w(f,s))
-			implemented in reconstruct3d.cpp
-		score_weighting AND dose_weighting: dose weighting scheme from before but score weighting is modified,
-		instead of using score from individual frame, uses the average score across all frames in a particle
-		*/
-
-		// wxPrintf("CTF fourier voxel size x: %.5f\n", particle_to_insert.ctf_image->fourier_voxel_size_x);
-		// wxPrintf("CTF fourier voxel size y: %.5f\n", particle_to_insert.ctf_image->fourier_voxel_size_y);
-
+	// Now insert into 3D arrays
 		for (j = particle_to_insert.particle_image->logical_lower_bound_complex_y; j <= particle_to_insert.particle_image->logical_upper_bound_complex_y; j++)
 		{
 			y_coordinate_2d = j;
 			y_coord_sq = powf(y_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_y, 2);
-			// XD: should be similar to (just add the 0 coordinate), for (i = 0; i <= ref_image->physical_upper_bound_complex_x; i++) refer Image::UpdateLoopingAndAddressing()
 			for (i = 1; i <= particle_to_insert.particle_image->logical_upper_bound_complex_x; i++)
 			{
 				x_coordinate_2d = i;
-				// wxPrintf("%.2f ", dose_filter[array_counter]);
-
-				// XD: g^2 in cisTEM paper
 				frequency_squared = powf(x_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_x, 2) + y_coord_sq;
-
-				data_driven_score = particle_to_insert.data_weights[array_counter];
-
-				if (particle_to_insert.dose_weighting == true && particle_to_insert.score_weighting == true) {
-					// wxPrintf("Both weightings \n");
-					// data-driven weighting and average score weighting (of all frames in a particle)
-					weight = particle_weight * expf(avg_weight_conversion * frequency_squared) * data_driven_score;
-				} else if (particle_to_insert.dose_weighting == true) {
-					// wxPrintf("Only dose weighting \n");
-					// new data-driven exposure weighting
-					
-					weight = particle_weight * data_driven_score;
-				} else {
-					// only standard cisTEM score weighting
-					// wxPrintf("Only score weighting \n");
-					// wxPrintf("frame number is: %i \n", particle_to_insert.frame_number);
-					weight = particle_weight * expf(weight_conversion * frequency_squared);
-				}
-				// wxPrintf("The weight for pixel %i is: %f \n", array_counter, weight);
-				// wxPrintf("%.5f ", frequency_squared);
-				// wxPrintf("%.5f ", weight);
-				// wxPrintf("\n");
+//				weight = particle_weight * (1.0 + weight_conversion * frequency_squared);
+				weight = particle_weight * expf(weight_conversion * frequency_squared);
 //				if (weight > 0.0)
 //				{
 					particle_to_insert.alignment_parameters.euler_matrix.RotateCoords(x_coordinate_2d, y_coordinate_2d, z_coordinate_2d, x_coordinate_3d, y_coordinate_3d, z_coordinate_3d);
 					pixel_counter = particle_to_insert.particle_image->ReturnFourier1DAddressFromLogicalCoord(i,j,0);
 					AddByLinearInterpolation(x_coordinate_3d, y_coordinate_3d, z_coordinate_3d, particle_to_insert.particle_image->complex_values[pixel_counter], particle_to_insert.ctf_image->complex_values[pixel_counter], weight);
 //				}
-				array_counter++;
 			}
-			// wxPrintf("\n");
 		}
-
 	// Now deal with special case of i = 0
 		for (j = 0; j <= particle_to_insert.particle_image->logical_upper_bound_complex_y; j++)
 		{
 			y_coordinate_2d = j;
 			x_coordinate_2d = 0;
-			// XD: g^2
-
-			// wxPrintf("%.2f ", dose_filter[array_counter]);
 			frequency_squared = powf(y_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_y, 2);
-			// wxPrintf("%.5f ", frequency_squared);
-
-			data_driven_score = particle_to_insert.data_weights[array_counter];
-			// wxPrintf("data driven score %.2f\n", data_driven_score);
-
 //			weight = particle_weight * (1.0 + weight_conversion * frequency_squared);
-			// XD: particle_weight * Exp[(-BSC/4)*(score-score)*g^2]
-			if (particle_to_insert.dose_weighting == true && particle_to_insert.score_weighting == true) {
-				// wxPrintf("Both weightings \n");
-				// data-driven weighting and average score weighting (of all frames in a particle)
-				weight = particle_weight * expf(avg_weight_conversion * frequency_squared) * data_driven_score;
-			} else if (particle_to_insert.dose_weighting == true) {
-				// wxPrintf("Only dose weighting \n");
-				// new data-driven exposure weighting
-				
-				weight = particle_weight * data_driven_score;
-			} else {
-				// only standard cisTEM score weighting
-				// wxPrintf("Only score weighting \n");
-				// wxPrintf("frame number is: %i \n", particle_to_insert.frame_number);
-				weight = particle_weight * expf(weight_conversion * frequency_squared);
-			}
-			// wxPrintf("%.5f ", weight);
+			weight = particle_weight * expf(weight_conversion * frequency_squared);
 //			if (weight > 0.0)
 //			{
 				particle_to_insert.alignment_parameters.euler_matrix.RotateCoords(x_coordinate_2d, y_coordinate_2d, z_coordinate_2d, x_coordinate_3d, y_coordinate_3d, z_coordinate_3d);
-				// XD: get the coordinate of current pixel
 				pixel_counter = particle_to_insert.particle_image->ReturnFourier1DAddressFromLogicalCoord(0,j,0);
-				// adding the weight by linear interpolation
 				AddByLinearInterpolation(x_coordinate_3d, y_coordinate_3d, z_coordinate_3d, particle_to_insert.particle_image->complex_values[pixel_counter], particle_to_insert.ctf_image->complex_values[pixel_counter], weight);
 //			}
-			array_counter++;
 		}
-		// wxPrintf("\n");
-		
+
 		if (symmetry_matrices.number_of_matrices > 1)
 		{
-			// wxPrintf("symmetry matrices > 1\n");
-
 			particle_weight *= symmetry_weight;
 			for (k = 1; k < symmetry_matrices.number_of_matrices; k++)
 			{
-				// reset array counter
-				array_counter = 0;
 				for (j = particle_to_insert.particle_image->logical_lower_bound_complex_y; j <= particle_to_insert.particle_image->logical_upper_bound_complex_y; j++)
 				{
 					y_coordinate_2d = j;
@@ -346,24 +221,8 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 					{
 						x_coordinate_2d = i;
 						frequency_squared = powf(x_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_x, 2) + y_coord_sq;
-						data_driven_score = particle_to_insert.data_weights[array_counter];
-
-						if (particle_to_insert.dose_weighting == true && particle_to_insert.score_weighting == true) {
-							// wxPrintf("Both weightings \n");
-							// dose weighting and average score weighting
-							weight = particle_weight * expf(avg_weight_conversion * frequency_squared) * data_driven_score;
-						} else if (particle_to_insert.dose_weighting == true) {
-							// wxPrintf("Only dose weighting \n");
-							// new data-driven exposure weighting
-							weight = particle_weight * data_driven_score;
-						} else {
-							// only standard cisTEM score weighting
-							// wxPrintf("Only score weighting \n");
-							// wxPrintf("frame number is: %i \n", particle_to_insert.frame_number);
-							weight = particle_weight * expf(avg_weight_conversion * frequency_squared);
-						}
-
 //						weight = particle_weight * (1.0 + weight_conversion * frequency_squared);
+						weight = particle_weight * expf(weight_conversion * frequency_squared);
 //						if (weight > 0.0)
 //						{
 							temp_matrix = symmetry_matrices.rot_mat[k] * particle_to_insert.alignment_parameters.euler_matrix;
@@ -371,33 +230,16 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 							pixel_counter = particle_to_insert.particle_image->ReturnFourier1DAddressFromLogicalCoord(i,j,0);
 							AddByLinearInterpolation(x_coordinate_3d, y_coordinate_3d, z_coordinate_3d, particle_to_insert.particle_image->complex_values[pixel_counter], particle_to_insert.ctf_image->complex_values[pixel_counter], weight);
 //						}
-						array_counter++;
 					}
 				}
-				// Now deal with special case of i = 0
+			// Now deal with special case of i = 0
 				for (j = 0; j <= particle_to_insert.particle_image->logical_upper_bound_complex_y; j++)
 				{
 					y_coordinate_2d = j;
 					x_coordinate_2d = 0;
 					frequency_squared = powf(y_coordinate_2d * particle_to_insert.ctf_image->fourier_voxel_size_y, 2);
-
-					data_driven_score = particle_to_insert.data_weights[array_counter];
-
-					if (particle_to_insert.dose_weighting == true && particle_to_insert.score_weighting == true) {
-						// wxPrintf("Both weightings \n");
-						// dose weighting and average score weighting
-						weight = particle_weight * expf(avg_weight_conversion * frequency_squared) * data_driven_score;
-					} else if (particle_to_insert.dose_weighting == true) {
-						// wxPrintf("Only dose weighting \n");
-						// new data-driven exposure weighting
-						weight = particle_weight * data_driven_score;
-					} else {
-						// only standard cisTEM score weighting
-						// wxPrintf("Only score weighting \n");
-						// wxPrintf("frame number is: %i \n", particle_to_insert.frame_number);
-						weight = particle_weight * expf(weight_conversion * frequency_squared);
-					}
-
+//					weight = particle_weight * (1.0 + weight_conversion * frequency_squared);
+					weight = particle_weight * expf(weight_conversion * frequency_squared);
 //					if (weight > 0.0)
 //					{
 						temp_matrix = symmetry_matrices.rot_mat[k] * particle_to_insert.alignment_parameters.euler_matrix;
@@ -405,11 +247,9 @@ void Reconstruct3D::InsertSliceWithCTF(Particle &particle_to_insert, float symme
 						pixel_counter = particle_to_insert.particle_image->ReturnFourier1DAddressFromLogicalCoord(0,j,0);
 						AddByLinearInterpolation(x_coordinate_3d, y_coordinate_3d, z_coordinate_3d, particle_to_insert.particle_image->complex_values[pixel_counter], particle_to_insert.ctf_image->complex_values[pixel_counter], weight);
 //					}
-					array_counter++;
 				}
 			}
 		}
-
 	}
 }
 
@@ -419,8 +259,6 @@ void Reconstruct3D::InsertSliceNoCTF(Particle &particle_to_insert, float symmetr
 	MyDebugAssertTrue(particle_to_insert.particle_image->logical_z_dimension == 1, "Error: attempting to insert 3D image into 3D reconstruction");
 	MyDebugAssertTrue(image_reconstruction.is_in_memory, "Memory not allocated for image_reconstruction");
 	MyDebugAssertTrue(particle_to_insert.particle_image->IsSquare(), "Image must be square");
-
-	// wxPrintf("insert slice no ctf");
 
 	float particle_weight;
 
@@ -548,7 +386,6 @@ void Reconstruct3D::InsertSliceNoCTF(Particle &particle_to_insert, float symmetr
 	}
 }
 
-// XC: does fractional adding at different x,y,z coordinates since it could be e.g. (112.3,40.9,80.4)
 void Reconstruct3D::AddByLinearInterpolation(float &wanted_logical_x_coordinate, float &wanted_logical_y_coordinate, float &wanted_logical_z_coordinate, std::complex<float> &input_value, std::complex<float> &ctf_value, float wanted_weight)
 {
 	int i;
@@ -651,9 +488,7 @@ void Reconstruct3D::AddByLinearInterpolation(float &wanted_logical_x_coordinate,
 						weight = (1.0 - fabsf(wanted_logical_z_coordinate - k)) * weight_xy;
 						physical_coord = (upper_xy * physical_z_address) + physical_coord_xy;
 						conjugate = conj(value_to_insert);
-						//XD: this is the sum of all weights*score (input value)
 						image_reconstruction.complex_values[physical_coord] = image_reconstruction.complex_values[physical_coord] + conjugate * weight;
-						//XD: sum of all the weights
 						ctf_reconstruction[physical_coord] = ctf_reconstruction[physical_coord] + ctf_squared * weight;
 					}
 				}
@@ -707,7 +542,7 @@ void Reconstruct3D::CompleteEdges()
 			ctf_reconstruction[physical_coord_1] = ctf_reconstruction[physical_coord_1] + ctf_reconstruction[physical_coord_2];
 			ctf_reconstruction[physical_coord_2] = ctf_reconstruction[physical_coord_2] + temp_real;
 		}
-		// Deal with term at origin
+// Deal with term at origin
 		physical_coord_1 = image_reconstruction.ReturnFourier1DAddressFromLogicalCoord(0, 0, 0);
 		image_reconstruction.complex_values[physical_coord_1] = 2.0 * real(image_reconstruction.complex_values[physical_coord_1]);
 		ctf_reconstruction[physical_coord_1] = 2.0 * ctf_reconstruction[physical_coord_1];
@@ -998,32 +833,3 @@ Reconstruct3D &Reconstruct3D::operator += (const Reconstruct3D *other)
 	return *this;
 }
 
-void Reconstruct3D::NormalizeVoxels(float val_factor, int ctf_factor)
-{
-	int i;
-	int j;
-	int k;
-
-	long pixel_counter = 0;
-
-	// wxPrintf("\n Start to normalize voxels\n");
-
-	if (ctf_factor != 1 || val_factor != 1.0) {
-		for (k = 0; k <= image_reconstruction.physical_upper_bound_complex_z; k++)
-		{
-			for (j = 0; j <= image_reconstruction.physical_upper_bound_complex_y; j++)
-			{
-				for (i = 0; i <= image_reconstruction.physical_upper_bound_complex_x; i++)
-				{
-					image_reconstruction.complex_values[pixel_counter] = image_reconstruction.complex_values[pixel_counter]/val_factor;
-					ctf_reconstruction[pixel_counter] = ctf_reconstruction[pixel_counter]/ctf_factor;
-					pixel_counter++;
-				}
-			}
-		}
-	}
-
-	// wxPrintf("Normalized %i voxels in total \n", pixel_counter);
-
-	// wxPrintf("\n End of normalize voxels\n");
-}

@@ -1,16 +1,2 @@
 *.o
 *.dff
-*.Po
-.dirstamp
-.deps
-src/*.a
-src/core/.deps/*
-src/libcore
-src/libstdc
-src/libwx_baseu-3.0
-src/libwx_baseu_net-3
-src/libfftw
-src/libtiff
-bin/*
-config.log
-config.status

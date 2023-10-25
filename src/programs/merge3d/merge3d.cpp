@@ -27,8 +27,6 @@ void Merge3DApp::DoInteractiveUserInput()
 	wxString	dump_file_seed_1;
 	wxString	dump_file_seed_2;
 	int			number_of_dump_files;
-	int			number_of_frames;
-	bool		normalize;
 
 	UserInput *my_input = new UserInput("Merge3D", 1.01);
 
@@ -42,8 +40,6 @@ void Merge3DApp::DoInteractiveUserInput()
 	dump_file_seed_1 = my_input->GetFilenameFromUser("Seed for input dump filenames for odd particles", "The seed name of the first dump files with the intermediate reconstruction arrays", "dump_file_seed_1_.dat", false);
 	dump_file_seed_2 = my_input->GetFilenameFromUser("Seed for input dump filenames for even particles", "The seed name of the second dump files with the intermediate reconstruction arrays", "dump_file_seed_2_.dat", false);
 	number_of_dump_files = my_input->GetIntFromUser("Number of dump files", "The number of dump files that should be read from disk and merged", "1", 1);
-	number_of_frames = my_input->GetIntFromUser("Number of frames per movie", "The number of frames per movie", "1", 1);
-	normalize = my_input->GetYesNoFromUser("Normalize in voxels and ctf by the number of frames", "Should we normalize the voxels and ctf?", "Yes");
 
 	delete my_input;
 
@@ -51,8 +47,8 @@ void Merge3DApp::DoInteractiveUserInput()
 	bool save_orthogonal_views_image = false;
 	wxString orthogonal_views_filename = "";
 	float weiner_nominator = 1.0f;
-	my_current_job.Reset(14);
-	my_current_job.ManualSetArguments("ttttfffttibtiibf",	output_reconstruction_1.ToUTF8().data(),
+	my_current_job.Reset(12);
+	my_current_job.ManualSetArguments("ttttfffttibtif",	output_reconstruction_1.ToUTF8().data(),
 													output_reconstruction_2.ToUTF8().data(),
 													output_reconstruction_filtered.ToUTF8().data(),
 													output_resolution_statistics.ToUTF8().data(),
@@ -63,8 +59,6 @@ void Merge3DApp::DoInteractiveUserInput()
 													save_orthogonal_views_image,
 													orthogonal_views_filename.ToUTF8().data(),
 													number_of_dump_files,
-													number_of_frames,
-													normalize,
 													weiner_nominator);
 }
 
@@ -85,9 +79,7 @@ bool Merge3DApp::DoCalculation()
 	bool save_orthogonal_views_image			= my_current_job.arguments[10].ReturnBoolArgument();
 	wxString orthogonal_views_filename			= my_current_job.arguments[11].ReturnStringArgument();
 	int number_of_dump_files					= my_current_job.arguments[12].ReturnIntegerArgument();
-	int number_of_frames						= my_current_job.arguments[13].ReturnIntegerArgument();
-	bool normalize								= my_current_job.arguments[14].ReturnBoolArgument();
-	float weiner_nominator                      = my_current_job.arguments[15].ReturnFloatArgument();
+	float weiner_nominator                      = my_current_job.arguments[13].ReturnFloatArgument();
 	ResolutionStatistics *gui_statistics = NULL;
 
 	if (is_running_locally == false) gui_statistics = new ResolutionStatistics;
@@ -138,7 +130,6 @@ bool Merge3DApp::DoCalculation()
 	output_statistics_file.WriteCommentLine("C Outer mask radius (A):                   " + wxString::Format("%f", outer_mask_radius));
 	output_statistics_file.WriteCommentLine("C Seed for dump files for odd particles:   " + dump_file_seed_1);
 	output_statistics_file.WriteCommentLine("C Seed for dump files for even particles:  " + dump_file_seed_2);
-	// output_statistics_file.WriteCommentLine("C Number of frames: 						" + number_of_frames);
 	output_statistics_file.WriteCommentLine("C");
 
 	dump_file = wxFileName::StripExtension(dump_file_seed_1) + wxString::Format("%i", 1) + "." + extension;
@@ -161,6 +152,7 @@ bool Merge3DApp::DoCalculation()
 	temp_reconstruction.Init(logical_x_dimension, logical_y_dimension, logical_z_dimension, pixel_size, average_occupancy, average_sigma, sigma_bfactor_conversion);
 	Reconstruct3D my_reconstruction_1(logical_x_dimension, logical_y_dimension, logical_z_dimension, pixel_size, average_occupancy, average_sigma, sigma_bfactor_conversion, my_symmetry);
 	Reconstruct3D my_reconstruction_2(logical_x_dimension, logical_y_dimension, logical_z_dimension, pixel_size, average_occupancy, average_sigma, sigma_bfactor_conversion, my_symmetry);
+
 
 	wxPrintf("\nReading reconstruction arrays...\n\n");
 
@@ -196,13 +188,6 @@ bool Merge3DApp::DoCalculation()
 		}
 	}
 
-	if (normalize == true) {
-		wxPrintf("Normalizing with number of frames: %i \n", number_of_frames);
-
-		my_reconstruction_1.NormalizeVoxels(1, number_of_frames);
-		my_reconstruction_2.NormalizeVoxels(1, number_of_frames);
-	}
-
 	wxPrintf("\nFinished reading arrays\n");
 
 	output_3d1.FinalizeSimple(my_reconstruction_1, original_x_dimension, original_pixel_size, pixel_size,
@@ -211,23 +196,6 @@ bool Merge3DApp::DoCalculation()
 			inner_mask_radius, outer_mask_radius, mask_falloff, output_reconstruction_2);
 
 	output_3d.mask_volume_in_voxels = output_3d1.mask_volume_in_voxels;
-
-
-// XD: create half maps based on finalize optimal
-	// ReconstructedVolume output_3d1optimal(molecular_mass_kDa);
-	// ReconstructedVolume output_3d2optimal(molecular_mass_kDa);
-
-
-	// output_3d1optimal.mask_volume_in_voxels = output_3d1.mask_volume_in_voxels
-	// output_3d2optimal.mask_volume_in_voxels = output_3d2.mask_volume_in_voxels
-
-	// output_3d1optimal.FinalizeOptimal(my_reconstruction_1, output_3d1.density_map, output_3d2.density_map,
-	// 		original_pixel_size, pixel_size, inner_mask_radius, outer_mask_radius, mask_falloff,
-	// 		center_mass, output_reconstruction_1, output_statistics_file, gui_statistics, weiner_nominator);
-	// output_3d2optimal.FinalizeOptimal(my_reconstruction_2, output_3d1.density_map, output_3d2.density_map,
-	// 		original_pixel_size, pixel_size, inner_mask_radius, outer_mask_radius, mask_falloff,
-	// 		center_mass, output_reconstruction_2, output_statistics_file, gui_statistics, weiner_nominator);
-
 	my_reconstruction_1 += my_reconstruction_2;
 	my_reconstruction_2.FreeMemory();
 
@@ -245,6 +213,7 @@ bool Merge3DApp::DoCalculation()
 		output_3d.density_map.CreateOrthogonalProjectionsImage(&orth_image);
 		orth_image.QuickAndDirtyWriteSlice(orthogonal_views_filename.ToStdString(), 1);
 	}
+
 
 	if (is_running_locally == false)
 	{

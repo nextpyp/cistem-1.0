@@ -5,26 +5,11 @@ Particle::Particle()
 	Init();
 }
 
-// Particle::Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension)
-// {
-// 	Init();
-
-// 	AllocateImage(wanted_logical_x_dimension, wanted_logical_y_dimension);
-// }
-
-// XD: new Particle constructor
-// could use something like... FrealignParameterFile(wxString wanted_filename, int wanted_access_type, int wanted_records_per_line = 17);
-Particle::Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension, int wanted_number_of_parameters)
+Particle::Particle(int wanted_logical_x_dimension, int wanted_logical_y_dimension)
 {
-	Init(wanted_number_of_parameters);
+	Init();
 
 	AllocateImage(wanted_logical_x_dimension, wanted_logical_y_dimension);
-
-	// number_of_parameters = wanted_number_of_parameters;
-
-	wxPrintf("In new Particle with wanted # of parameters: %i \n", number_of_parameters);
-
-	// MyDebugAssertTrue(number_of_parameters != 17, "wanted parameters not added!");
 }
 
 Particle::~Particle()
@@ -52,9 +37,9 @@ Particle::~Particle()
 	}
 }
 
-void Particle::Init(int wanted_number_of_parameters)
+void Particle::Init()
 {
-	number_of_parameters = wanted_number_of_parameters;
+	number_of_parameters = 17;
 	target_phase_error = 45.0;
 	origin_micrograph = -1;
 	origin_x_coordinate = -1;

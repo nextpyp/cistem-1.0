@@ -49,6 +49,4 @@ public:
 	Reconstruct3D &operator = (const Reconstruct3D *other);
 	Reconstruct3D &operator += (const Reconstruct3D &other);
 	Reconstruct3D &operator += (const Reconstruct3D *other);
-	void PrintVoxels();
-	void NormalizeVoxels(float val_factor, int ctf_factor);
 };

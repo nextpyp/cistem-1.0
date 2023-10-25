@@ -36,7 +36,6 @@ void FrealignParameterFile::Open(wxString wanted_filename, int wanted_access_typ
 	filename = wanted_filename;
 	access_type = wanted_access_type;
 	number_of_lines = 0;
-	all_lines = 0;
 	current_line = 0;
 	parameter_cache = NULL;
 	average_defocus = 0.0;
@@ -87,12 +86,8 @@ void FrealignParameterFile::WriteCommentLine(wxString comment_string)
 void FrealignParameterFile::WriteLine(float *parameters, bool comment)
 {
 	MyDebugAssertTrue(access_type == 1, "File not opened for WRITE");
-	// wxPrintf("Records per line: %i\n", records_per_line);
 
-	// XD: in the future we could output parx files here 
-	// if (records_per_line == 17 || records_per_line == 46 )
-
-	if (records_per_line == 17 )
+	if (records_per_line == 17)
 	{
 		if (comment)
 		{
@@ -126,26 +121,6 @@ void FrealignParameterFile::WriteLine(float *parameters, bool comment)
 					float(parameters[11]), float(parameters[12]), myroundint(parameters[13]), float(parameters[14]), float(parameters[15]));
 		}
 	}
-	// else if (records_per_line == 46)
-	// {
-	// 	if (comment)
-	// 	{
-	// 		fprintf(parameter_file, "C       %7.2f %7.2f %7.2f %9.2f %9.2f %7.0f %5i %8.1f %8.1f %7.2f %7.2f %7.2f %9i %10.4f %7.2f\n",
-	// 				float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]),
-	// 				float(parameters[6]), int(parameters[7]), float(parameters[8]), float(parameters[9]), float(parameters[10]),
-	// 				float(parameters[11]), float(parameters[12]), myroundint(parameters[13]), float(parameters[14]), float(parameters[15]));
-	// 	}
-	// 	else
-	// 	{
-	// 								'%7d %8.2f %8.2f %8.2f%10.2f%10.2f %8.0f %6d %9.1f %9.1f %8.2f %8.2f%10.0f%11.4f%8.2f%8.2f%9d%10.4f%10.4f%9d%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f%10.4f'
-
-	// 		fprintf(parameter_file, "%7i %7.2f %7.2f %7.2f %9.2f %9.2f %7.0f %5i %8.1f %8.1f %7.2f %7.2f %7.2f %9i %10.4f %7.2f\n",
-	// 				int(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]),
-	// 				float(parameters[6]), int(parameters[7]), float(parameters[8]), float(parameters[9]), float(parameters[10]),
-	// 				float(parameters[11]), float(parameters[12]), myroundint(parameters[13]), float(parameters[14]), float(parameters[15]));
-	// 	}
-		
-	// }
 	number_of_lines++;
 }
 
@@ -167,7 +142,6 @@ int FrealignParameterFile::ReadFile(bool exclude_negative_film_numbers, int part
 
 	file_size = ReturnFileSizeInBytes(filename);
 
-	// XD: finds the line_length
 	dataline[0] = 'C';
 	while (dataline[0] == 'C')
 	{
@@ -177,55 +151,24 @@ int FrealignParameterFile::ReadFile(bool exclude_negative_film_numbers, int part
 	line_length = strlen(dataline);
 	number_of_lines = file_size / line_length + 1;
 	if (parameter_cache != NULL) delete [] parameter_cache;
-	wxPrintf("\n The line length is %i \n", line_length);
-
-	// XD: need to change number_of_lines
+	parameter_cache = new float[records_per_line * number_of_lines];
 	records_per_line_in_file = records_per_line;
 	// Test if old Frealign format (phase shift missing)
 	if (line_length < 142) records_per_line_in_file = 16;
-	// Test if parx format (which has len 425)
-	else if (line_length > 400) {
-		records_per_line_in_file = 45;
-	}
-	if (line_length > 425) {
-		records_per_line_in_file = 46;
-	}
-	wxPrintf("\n There are %i records per line in file \n", records_per_line_in_file);
 	if (records_per_line_in_file < records_per_line) wxPrintf("\n Reading old parameter file...\n");
-
-	else if (records_per_line_in_file > records_per_line) {
-		wxPrintf("\n Reading extended parameter (parx) file...\n");
-		records_per_line = 46; // XD: to account for the 17th param
-	}
-
-	else wxPrintf("\n Reading standard parameter file...\n");
-
-	// XD: only set the parameter_cache over here
-	// XD: this reads in all the parameters in the file
-	parameter_cache = new float[records_per_line * number_of_lines];
 
 	current_line = 0;
 	for (line = 0; line < number_of_lines + 1; line++)
 //	for (line = 0; line < 10; line++)
 	{
-		// XD: uses fgets to read line into dataline
-		// XD: skips all lines that being with 'C'
 		if (dataline[0] != 'C')
 		{
-
 			if (strlen(dataline) != line_length && ! one_warning_length) {wxPrintf("Warning: line %i has different length than first data line\n", lines_read); one_warning_length = true;}
 			elements_read = records_per_line * current_line;
 			char_pointer = dataline;
-			for (i = 0; i < records_per_line_in_file; i++) {
-				parameter_cache[i + elements_read] = strtof(char_pointer, &char_pointer);
-			}
-			// wxPrintf("Within frealign parameter file \n");
-			// wxPrintf("movie %f ptl %f frame %f sigma %f current score %f change %f \n", parameter_cache[elements_read+7], parameter_cache[elements_read+17], parameter_cache[elements_read+20], parameter_cache[elements_read+14], parameter_cache[elements_read+15], parameter_cache[elements_read+16]);
-
+			for (i = 0; i < records_per_line_in_file; i++) {parameter_cache[i + elements_read] = strtof(char_pointer, &char_pointer);}
 			// Old Frealign format: need to shift last five parameters and add zero phase shift
-			// or new parx format
-			// XD: after this i = records_per_line_in_file
-			if (records_per_line_in_file != records_per_line)
+			if (records_per_line_in_file < records_per_line)
 			{
 				for (i = records_per_line - 1; i > 11; i--) {parameter_cache[i + elements_read] = parameter_cache[i - 1 + elements_read];}
 				parameter_cache[11 + elements_read] = 0.0;
@@ -256,12 +199,7 @@ void FrealignParameterFile::ReadLine(float *parameters)
 	int i;
 	int elements_read = records_per_line * current_line;
 
-	for (i = 0; i < records_per_line; i++) {
-		parameters[i] = parameter_cache[i + elements_read];
-		
-		};
-	// wxPrintf("Within frealign parameter file \n");
-	// wxPrintf("movie %f ptl %f frame %f sigma %f current score %f change %f \n", parameters[7], parameters[17], parameters[20], parameters[14], parameters[15], parameters[16]);
+	for (i = 0; i < records_per_line; i++) {parameters[i] = parameter_cache[i + elements_read];};
 	current_line++;
 }
 

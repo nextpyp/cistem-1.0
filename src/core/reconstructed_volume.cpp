@@ -403,7 +403,6 @@ void ReconstructedVolume::Calculate3DOptimal(Reconstruct3D &reconstruction, Reso
 // compute radius, in units of physical Fourier pixels
 					bin = int(sqrtf(frequency_squared) * number_of_bins2);
 
-					// XD: feels like BM3D where there is a wiener filtering...
 					if (statistics.part_SSNR.data_y[bin] != 0.0)
 					{
 						density_map.complex_values[pixel_counter] = reconstruction.image_reconstruction.complex_values[pixel_counter]
