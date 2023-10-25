@@ -1,0 +1,5 @@
+TIFFVStripSize64 TIFFVStripSize64_cistem
+TIFFRawStripSize64 TIFFRawStripSize64_cistem
+TIFFStripSize64 TIFFStripSize64_cistem
+TIFFScanlineSize64 TIFFScanlineSize64_cistem
+TIFFRasterScanlineSize64 TIFFRasterScanlineSize64_cistem

@@ -1,0 +1,5 @@
+_TIFFMultiply32 _TIFFMultiply32_cistem
+_TIFFMultiply64 _TIFFMultiply64_cistem
+_TIFFCheckRealloc _TIFFCheckRealloc_cistem
+_TIFFUInt64ToFloat _TIFFUInt64ToFloat_cistem
+_TIFFUInt64ToDouble _TIFFUInt64ToDouble_cistem

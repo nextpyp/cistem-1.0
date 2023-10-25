@@ -1,0 +1,7 @@
+_TIFFGetFields _TIFFGetFields_cistem
+_TIFFGetExifFields _TIFFGetExifFields_cistem
+_TIFFMergeFields _TIFFMergeFields_cistem
+_TIFFSetupFields _TIFFSetupFields_cistem
+TIFFFindField TIFFFindField_cistem
+_TIFFCreateAnonField _TIFFCreateAnonField_cistem
+_TIFFFindOrRegisterField _TIFFFindOrRegisterField_cistem

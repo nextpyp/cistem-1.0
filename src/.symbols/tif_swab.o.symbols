@@ -1,0 +1,4 @@
+TIFFSwabLong8 TIFFSwabLong8_cistem
+TIFFSwabArrayOfLong8 TIFFSwabArrayOfLong8_cistem
+TIFFSwabFloat TIFFSwabFloat_cistem
+TIFFSwabArrayOfFloat TIFFSwabArrayOfFloat_cistem
